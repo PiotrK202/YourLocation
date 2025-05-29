@@ -13,8 +13,9 @@ struct YourLocationApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MapView()
-                .environment(locationManager)
+            NavigationStack {
+                MapView(locationManager: locationManager)
+            }
         }
     }
 }
