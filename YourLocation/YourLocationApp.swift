@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct YourLocationApp: App {
+    @State private var  locationManager = LocationManager()
+    
     var body: some Scene {
         WindowGroup {
             MapView()
+                .environment(locationManager)
         }
     }
 }
