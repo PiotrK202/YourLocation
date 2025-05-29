@@ -21,8 +21,6 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        checkAuthorization()
     }
     
     func searchLocation(name: String) async -> CLLocationCoordinate2D? {
@@ -60,12 +58,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        let status = manager.authorizationStatus
-        authorizathioneStatus = status
-        
-        if status == .authorizedAlways || status == .authorizedWhenInUse {
-            manager.startUpdatingLocation()
-        }
+        checkAuthorization()
     }
 }
 
