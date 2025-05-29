@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import Observation
+import MapKit
 
 @Observable
 final class LocationManager: NSObject, CLLocationManagerDelegate {
@@ -15,12 +16,27 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     var location: CLLocationCoordinate2D?
     var authorizathioneStatus: CLAuthorizationStatus = .notDetermined
+    var showDeniedAlert = false
     
     override init() {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         checkAuthorization()
+    }
+    
+    func searchLocation(name: String) async -> CLLocationCoordinate2D? {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = name
+        
+        let search = MKLocalSearch(request: request)
+        do {
+            let response = try await search.start()
+            return response.mapItems.first?.placemark.coordinate
+        } catch {
+            print(error.localizedDescription)
+            return nil
+        }
     }
 
     func checkAuthorization() {
@@ -32,6 +48,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
+        case .denied, .restricted:
+            showDeniedAlert = true
         default: break
         }
     }
